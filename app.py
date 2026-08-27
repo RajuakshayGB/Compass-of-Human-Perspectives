@@ -1,14 +1,14 @@
 """
 app.py - The Compass of Human Perspectives
 Presentation & GUI Layer: Streamlit layout, session state lifecycle,
-language-specific views, dynamic thematic styling, and crash-safe passport generation.
+category-tinted viewports, elevated interactive option tiles, and passport generation.
 """
 
 import os
 import sys
 from io import BytesIO
 
-# Ensure working directory is in module path
+# Ensure working directory is on the Python module search path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
@@ -33,50 +33,164 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# CSS STYLESHEET
+# 1. 25-DIMENSION AMBIENT TINT PALETTES
 # ==============================================================================
-def inject_premium_styles(theme: str = "Dark"):
-    palette = {
-        "bg_color": "#FAF8F5" if theme.lower() == "light" else "#090D16",
-        "text_color": "#1E293B" if theme.lower() == "light" else "#E2E8F0",
-        "accent_color": "#9A722C" if theme.lower() == "light" else "#D4AF37",
-        "card_bg": "#FFFDFB" if theme.lower() == "light" else "rgba(15, 23, 42, 0.65)",
-        "card_border": "rgba(154, 114, 44, 0.2)" if theme.lower() == "light" else "rgba(255, 255, 255, 0.1)"
-    }
+DIMENSION_TINTS = {
+    0:  {"dark": "rgba(14, 165, 233, 0.08)", "light": "#EDF5FA"},   # Metaphysics & Reality (Slate Blue)
+    1:  {"dark": "rgba(168, 85, 247, 0.08)", "light": "#F5EFFB"},   # Consciousness & Mind (Lilac)
+    2:  {"dark": "rgba(20, 184, 166, 0.08)", "light": "#EDF8F6"},   # Epistemology & Knowledge (Teal)
+    3:  {"dark": "rgba(16, 185, 129, 0.08)", "light": "#ECF8F2"},   # Truth & Realism (Emerald)
+    4:  {"dark": "rgba(217, 119, 6, 0.08)",  "light": "#FAF4E8"},   # Religion & Sacredness (Amber)
+    5:  {"dark": "rgba(124, 58, 237, 0.08)", "light": "#F3EEFA"},   # Death & Finitude (Violet)
+    6:  {"dark": "rgba(244, 63, 94, 0.08)",  "light": "#FCEEF0"},   # Purpose & Meaning (Rose)
+    7:  {"dark": "rgba(59, 130, 246, 0.08)", "light": "#EDF3FC"},   # Ethics & Meta-Ethics (Blue)
+    8:  {"dark": "rgba(6, 182, 212, 0.08)",  "light": "#EBF6F8"},   # Moral Action & Practical Virtue (Sky)
+    9:  {"dark": "rgba(234, 88, 12, 0.08)",  "light": "#FAF0EB"},   # Human Nature & Destiny (Terracotta)
+    10: {"dark": "rgba(139, 92, 246, 0.08)", "light": "#F2EEFA"},   # Self & Identity (Indigo)
+    11: {"dark": "rgba(22, 163, 74, 0.08)",  "light": "#ECF6EE"},   # Free Will & Agency (Forest Green)
+    12: {"dark": "rgba(34, 197, 94, 0.08)",  "light": "#EFF7F1"},   # Society & Community (Sage)
+    13: {"dark": "rgba(29, 78, 216, 0.08)",  "light": "#EBF1FA"},   # Liberty & Governance (Royal Blue)
+    14: {"dark": "rgba(146, 64, 14, 0.08)",  "light": "#F7F1EB"},   # Authority & Institutional Order (Bronze)
+    15: {"dark": "rgba(225, 29, 72, 0.08)",  "light": "#FBEFF2"},   # Equality & Hierarchy (Crimson)
+    16: {"dark": "rgba(101, 163, 13, 0.08)", "light": "#F2F7EB"},   # Economics & Distribution (Olive)
+    17: {"dark": "rgba(180, 83, 9, 0.08)",   "light": "#F8F1EA"},   # Culture & Tradition (Sienna)
+    18: {"dark": "rgba(220, 38, 38, 0.08)",  "light": "#FCEFEF"},   # Political Change (Coral)
+    19: {"dark": "rgba(30, 58, 138, 0.08)",  "light": "#ECEFF7"},   # Global Scope & Loyalty (Navy)
+    20: {"dark": "rgba(16, 185, 129, 0.08)", "light": "#ECF8F3"},   # Ecology & Environment (Pure Green)
+    21: {"dark": "rgba(20, 184, 166, 0.08)", "light": "#EBF7F6"},   # Animal Ethics & Sentience (Mint)
+    22: {"dark": "rgba(124, 58, 237, 0.08)", "light": "#F3EEFA"},   # Technology & AI (Electric Violet)
+    23: {"dark": "rgba(6, 182, 212, 0.08)",  "light": "#EBF6F8"},   # Civilizational Future (Turquoise)
+    24: {"dark": "rgba(249, 115, 22, 0.08)", "light": "#FAF1EB"}    # Pluralism & Openness (Peach)
+}
+
+# ==============================================================================
+# 2. ENHANCED GREY/OFF-WHITE STYLING & TILE ARCHITECTURE
+# ==============================================================================
+def inject_custom_styles(theme: str = "Dark", dim_idx: int = 0):
+    """Injects bespoke CSS for refined Grey / Off-White palettes with category tints."""
+    tint_mode = "dark" if theme.lower() == "dark" else "light"
+    active_tint = DIMENSION_TINTS.get(dim_idx, {}).get(tint_mode, "transparent")
+
+    if theme.lower() == "light":
+        # Refined Warm Off-White / Alabaster
+        palette = {
+            "bg_base": "#F7F5F0",
+            "text_primary": "#2D3748",
+            "text_secondary": "#5A6A80",
+            "text_sub": "#718096",
+            "accent_gold": "#9A722C",
+            "tile_bg": "#FFFFFF",
+            "tile_border": "#E2DCD2",
+            "tile_hover_border": "#9A722C",
+            "tile_selected_bg": "#F4EDE1",
+            "tile_selected_border": "#9A722C",
+            "tension_bg": "#FFFFFF",
+            "badge_bg": "#EFECE4",
+            "badge_text": "#785B24"
+        }
+    else:
+        # Refined Neutral Grey / Deep Slate-Grey
+        palette = {
+            "bg_base": "#1A1E24",
+            "text_primary": "#E4E8EE",
+            "text_secondary": "#A0AEC0",
+            "text_sub": "#808D9E",
+            "accent_gold": "#D4AF37",
+            "tile_bg": "#242932",
+            "tile_border": "#353D4A",
+            "tile_hover_border": "#D4AF37",
+            "tile_selected_bg": "#2E3642",
+            "tile_selected_border": "#D4AF37",
+            "tension_bg": "#242932",
+            "badge_bg": "#1C2129",
+            "badge_text": "#D4AF37"
+        }
+
     st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600&display=swap');
+
+    /* Viewport Base Background with Category Ambient Tint */
     .stApp {{
-        background-color: {palette['bg_color']} !important;
-        color: {palette['text_color']} !important;
+        background-color: {palette['bg_base']} !important;
+        background-image: radial-gradient(circle at 50% 15%, {active_tint} 0%, transparent 75%) !important;
+        background-attachment: fixed;
+        color: {palette['text_primary']} !important;
         font-family: 'Inter', sans-serif;
     }}
+
     .cinzel-title {{
         font-family: 'Cinzel', serif;
         font-weight: 700;
-        color: {palette['accent_color']};
+        letter-spacing: 0.03em;
+        color: {palette['accent_gold']};
     }}
+
     .serif-text {{
         font-family: 'Noto Serif Devanagari', serif;
     }}
+
+    /* Question Dimension Category Header Badge */
+    .category-badge {{
+        display: inline-block;
+        padding: 5px 14px;
+        background: {palette['badge_bg']};
+        color: {palette['badge_text']};
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+        border: 1px solid {palette['tile_border']};
+    }}
+
+    /* Interactive Option Tile Styling */
+    div[data-testid="stButton"] > button {{
+        background-color: {palette['tile_bg']} !important;
+        border: 1.5px solid {palette['tile_border']} !important;
+        border-radius: 12px !important;
+        padding: 16px 22px !important;
+        color: {palette['text_primary']} !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        min-height: 72px !important;
+        white-space: normal !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.22s ease-in-out !important;
+    }}
+
+    div[data-testid="stButton"] > button:hover {{
+        border-color: {palette['tile_hover_border']} !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12) !important;
+    }}
+
+    /* Selected Option Tile Highlight */
+    div[data-testid="stButton"] > button[kind="primary"] {{
+        background-color: {palette['tile_selected_bg']} !important;
+        border-color: {palette['tile_selected_border']} !important;
+        box-shadow: 0 0 0 1px {palette['tile_selected_border']}, 0 8px 20px rgba(0, 0, 0, 0.18) !important;
+    }}
+
     .tension-card {{
-        background: {palette['card_bg']};
-        border-left: 4px solid {palette['accent_color']};
-        padding: 16px 20px;
-        margin-bottom: 14px;
-        border-radius: 4px;
+        background: {palette['tension_bg']};
+        border-left: 4px solid {palette['accent_gold']};
+        border-radius: 8px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }}
     </style>
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# LOCALIZED UI TEXT
+# 3. UI LOCALIZED DICTIONARY
 # ==============================================================================
 UI_TEXT = {
     "English": {
         "title": "The Compass of Human Perspectives",
         "subtitle": "Why do you believe what you believe?",
-        "tagline": "Embark on an exploration of human thought. Across 25 or 100 questions, discover the structural architecture of your worldview.",
+        "tagline": "Embark on an intellectual exploration of human thought. Across 25 or 100 questions, discover the structural architecture of your worldview and measure your affinities to major philosophical traditions.",
         "quick_test": "Quick Odyssey (25 Questions)",
         "full_test": "Full Odyssey (100 Questions)",
         "start_quick": "Start Quick Odyssey (25 Questions)",
@@ -86,7 +200,7 @@ UI_TEXT = {
         "next_btn": "Next →",
         "reveal_btn": "Reveal My Worldview 🧭",
         "retake_btn": "Retake Odyssey ↺",
-        "char_title": "🧭 Profile Characterization",
+        "char_title": "🧭 Profile Attributes",
         "affinities_label": "🏛️ Philosophical Affinities",
         "challenge_title": "⚡ Dialectical Cognitive Tensions",
         "no_tensions": "🟢 No structural tensions detected. Your worldview displays high internal thematic consistency.",
@@ -95,7 +209,7 @@ UI_TEXT = {
     "Hindi": {
         "title": "मानव दृष्टिकोण का कम्पास",
         "subtitle": "आप जो मानते हैं, क्यों मानते हैं?",
-        "tagline": "मानव विचार की एक गंभीर खोज पर निकलें। 25 या 100 प्रश्नों के माध्यम से अपने विश्वदृष्टिकोण की वास्तुकला को जानें।",
+        "tagline": "मानव विचार की एक गहन खोज पर निकलें। 25 या 100 प्रश्नों के माध्यम से अपने विश्वदृष्टिकोण की वास्तुकला को समझें और वैश्विक दार्शनिक परंपराओं के साथ अपनी समानता देखें।",
         "quick_test": "त्वरित यात्रा (25 प्रश्न)",
         "full_test": "पूर्ण यात्रा (100 प्रश्न)",
         "start_quick": "त्वरित यात्रा शुरू करें (25 प्रश्न)",
@@ -105,7 +219,7 @@ UI_TEXT = {
         "next_btn": "अगला →",
         "reveal_btn": "मेरा विश्वदृष्टिकोण प्रकट करें 🧭",
         "retake_btn": "पुनः आरंभ करें ↺",
-        "char_title": "🧭 प्रोफ़ाइल लक्षण वर्णन",
+        "char_title": "🧭 प्रोफ़ाइल लक्षण",
         "affinities_label": "🏛️ दार्शनिक समानताएं",
         "challenge_title": "⚡ संज्ञानात्मक तनाव (Cognitive Tensions)",
         "no_tensions": "🟢 कोई संरचनात्मक तनाव नहीं पाया गया। आपका विश्वदृष्टिकोण उच्च विषयगत निरंतरता प्रदर्शित करता है।",
@@ -114,27 +228,27 @@ UI_TEXT = {
 }
 
 # ==============================================================================
-# FIXED PASSPORT COMPOSITING ENGINE
+# 4. PASSPORT GENERATION ENGINE
 # ==============================================================================
 def generate_passport_image(user_coords, top_affinity, character_tags):
-    """Generates an 800x1100 digital philosophical passport without string color crashes."""
+    """Generates an 800x1100 digital philosophical passport asset."""
     w, h = 800, 1100
-    img = Image.new("RGB", (w, h), (9, 13, 22))
+    img = Image.new("RGB", (w, h), (26, 30, 36))
     draw = ImageDraw.Draw(img)
 
-    # Frame Borders (using solid integer tuples to avoid Pillow string errors)
+    # Frame Borders
     draw.rectangle([25, 25, w - 25, h - 25], outline=(212, 175, 55), width=2)
     draw.rectangle([35, 35, w - 35, h - 35], outline=(100, 85, 35), width=1)
 
     # Header
     draw.text((w // 2, 75), "THE COMPASS OF HUMAN PERSPECTIVES", fill=(212, 175, 55), anchor="mm")
-    draw.text((w // 2, 105), "COGNITIVE IDENTITY PASSPORT", fill=(148, 163, 184), anchor="mm")
+    draw.text((w // 2, 105), "COGNITIVE IDENTITY PASSPORT", fill=(160, 174, 192), anchor="mm")
 
-    # Primary Affinity Match
-    draw.text((w // 2, 220), top_affinity["name"].upper(), fill=(248, 250, 252), anchor="mm")
+    # Primary Affinity
+    draw.text((w // 2, 220), top_affinity["name"].upper(), fill=(240, 244, 248), anchor="mm")
     draw.text((w // 2, 255), f"MATCH AFFINITY: {top_affinity['similarity_pct']}%", fill=(56, 189, 248), anchor="mm")
 
-    # Coordinates Track Bars
+    # Coordinate Sliders
     labels = [
         ("Transcendence / Physicalism", user_coords[0]),
         ("Collectivism / Individualism", user_coords[1]),
@@ -145,15 +259,15 @@ def generate_passport_image(user_coords, top_affinity, character_tags):
     start_y = 350
     for idx, (lbl, val) in enumerate(labels):
         y = start_y + (idx * 80)
-        draw.text((60, y), lbl, fill=(226, 232, 240))
-        draw.rounded_rectangle([60, y + 25, 740, y + 37], radius=6, fill=(30, 41, 59))
+        draw.text((60, y), lbl, fill=(228, 232, 238))
+        draw.rounded_rectangle([60, y + 25, 740, y + 37], radius=6, fill=(45, 55, 72))
         norm_x = 60 + int(((val + 1.0) / 2.0) * 680)
         draw.rounded_rectangle([60, y + 25, max(70, norm_x), y + 37], radius=6, fill=(212, 175, 55))
 
-    # Tags
+    # Footer
     draw.text((w // 2, 750), "PROFILE ATTRIBUTES", fill=(212, 175, 55), anchor="mm")
-    draw.text((w // 2, 790), " • ".join(character_tags), fill=(248, 250, 252), anchor="mm")
-    draw.text((w // 2, 1040), "NON-CLINICAL PHILOSOPHICAL IDENTITY ARTIFACT", fill=(100, 116, 139), anchor="mm")
+    draw.text((w // 2, 790), " • ".join(character_tags), fill=(240, 244, 248), anchor="mm")
+    draw.text((w // 2, 1040), "NON-CLINICAL PHILOSOPHICAL IDENTITY ARTIFACT", fill=(128, 141, 158), anchor="mm")
 
     buf = BytesIO()
     img.save(buf, format="PNG")
@@ -174,14 +288,19 @@ def render_vector_radar(user_coords, top_match_vector):
         fill='toself', name='Tradition Baseline', line_color='#38BDF8', opacity=0.5
     ))
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 100], color="#94A3B8"), bgcolor="rgba(15, 23, 42, 0.4)"),
-        paper_bgcolor='rgba(0,0,0,0)', showlegend=True, margin=dict(l=40, r=40, t=20, b=20),
-        font=dict(color="#E2E8F0")
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, 100], color="#808D9E"),
+            bgcolor="rgba(36, 41, 50, 0.4)"
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        showlegend=True,
+        margin=dict(l=40, r=40, t=20, b=20),
+        font=dict(color="#E4E8EE")
     )
     return fig
 
 # ==============================================================================
-# STATE INITIALIZATION
+# 5. STATE INITIALIZATION & CONTROLS
 # ==============================================================================
 if "answers" not in st.session_state:
     st.session_state.answers = {}
@@ -198,11 +317,16 @@ if "started" not in st.session_state:
 if "completed" not in st.session_state:
     st.session_state.completed = False
 
-inject_premium_styles(st.session_state.theme)
+raw_questions = load_questions_dataset(mode=st.session_state.test_type.lower())
+active_dim_idx = 0
+if st.session_state.started and not st.session_state.completed and raw_questions:
+    active_dim_idx = raw_questions[st.session_state.current_question_index].get("dimIndex", 0)
+
+inject_custom_styles(st.session_state.theme, active_dim_idx)
 ui = UI_TEXT[st.session_state.language]
 is_hindi = (st.session_state.language == "Hindi")
 
-# Header Bar
+# Navigation Header
 c1, c2, c3 = st.columns([6.5, 2.0, 1.5])
 with c1:
     st.markdown("<h2 class='cinzel-title' style='margin:0;'>🧭 THE COMPASS OF HUMAN PERSPECTIVES</h2>", unsafe_allow_html=True)
@@ -219,8 +343,6 @@ with c3:
 
 st.write("---")
 
-raw_questions = load_questions_dataset(mode=st.session_state.test_type.lower())
-
 # ==============================================================================
 # VIEW 1: LANDING PAGE
 # ==============================================================================
@@ -228,14 +350,14 @@ if not st.session_state.started and not st.session_state.completed:
     st.markdown(f"""
     <div style='text-align: center; padding: 30px 20px;'>
         <h1 class='cinzel-title' style='font-size: 2.8rem;'>{ui['title']}</h1>
-        <p class='serif-text' style='font-size: 1.35rem; color: #94A3B8; font-style: italic;'>“{ui['subtitle']}”</p>
-        <p style='max-width: 750px; margin: 20px auto; font-size: 1.1rem; line-height: 1.7;'>{ui['tagline']}</p>
+        <p class='serif-text' style='font-size: 1.35rem; color: #A0AEC0; font-style: italic;'>“{ui['subtitle']}”</p>
+        <p style='max-width: 760px; margin: 20px auto; font-size: 1.1rem; line-height: 1.7;'>{ui['tagline']}</p>
     </div>
     """, unsafe_allow_html=True)
 
     b1, b2 = st.columns(2)
     with b1:
-        st.info(f"**{ui['quick_test']}**\n\n25 questions (1 per core dimension).")
+        st.info(f"**{ui['quick_test']}**\n\n25 questions (1 per core dimension) for a concise diagnostic.")
         if st.button(ui["start_quick"], use_container_width=True, type="primary"):
             st.session_state.test_type = "Quick"
             st.session_state.started = True
@@ -243,7 +365,7 @@ if not st.session_state.started and not st.session_state.completed:
             st.session_state.answers = {}
             st.rerun()
     with b2:
-        st.info(f"**{ui['full_test']}**\n\n100 questions (4 per core dimension).")
+        st.info(f"**{ui['full_test']}**\n\n100 questions (4 per core dimension) for a deep assessment.")
         if st.button(ui["start_full"], use_container_width=True):
             st.session_state.test_type = "Full"
             st.session_state.started = True
@@ -252,29 +374,37 @@ if not st.session_state.started and not st.session_state.completed:
             st.rerun()
 
 # ==============================================================================
-# VIEW 2: QUESTION SLIDESHOW
+# VIEW 2: QUESTION SLIDESHOW (TILED OPTIONS WITH AMBIENT CATEGORY TINT)
 # ==============================================================================
 elif st.session_state.started and not st.session_state.completed:
     total_q = len(raw_questions)
     idx = st.session_state.current_question_index
     q = raw_questions[idx]
 
+    # Progress & Category Badge
     st.progress((idx + 1) / total_q)
-    dim_name = q.get('dimension_hi' if is_hindi else 'dimension', '')
-    st.caption(ui["progress_label"].format(current=idx + 1, total=total_q) + f" — {dim_name}")
+    dim_name = q.get('dimension_hi' if is_hindi else 'dimension', q.get('dimension', ''))
+    
+    badge_html = f"<div class='category-badge'>DIMENSION: {dim_name.upper()}</div>"
+    st.markdown(badge_html, unsafe_allow_html=True)
+    st.caption(ui["progress_label"].format(current=idx + 1, total=total_q))
 
+    # Question Text
     q_text = q['text_hi'] if is_hindi and q.get('text_hi') else q['text_en']
-    st.markdown(f"<h3 style='margin: 20px 0;'>{q_text}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='margin: 14px 0 24px 0; line-height: 1.4;'>{q_text}</h3>", unsafe_allow_html=True)
 
     current_choice = st.session_state.answers.get(q["id"], None)
+
+    # Elevated Option Tiles
     for opt in q["options"]:
         opt_code = opt["code"]
         opt_text = opt['text_hi'] if is_hindi and opt.get('text_hi') else opt['text_en']
         is_selected = (current_choice == opt_code)
         
+        tile_label = f"[{opt_code}]  {opt_text}"
         if st.button(
-            f"{opt_code}. {opt_text}",
-            key=f"opt_{q['id']}_{opt_code}",
+            tile_label,
+            key=f"opt_tile_{q['id']}_{opt_code}",
             use_container_width=True,
             type="primary" if is_selected else "secondary"
         ):
@@ -298,7 +428,7 @@ elif st.session_state.started and not st.session_state.completed:
                 st.rerun()
 
 # ==============================================================================
-# VIEW 3: PROFILE REVEAL
+# VIEW 3: PROFILE REVEAL & DIAGNOSTIC MIRROR
 # ==============================================================================
 elif st.session_state.completed:
     user_coords = calculate_coordinates_direct(st.session_state.answers, raw_questions, st.session_state.test_type)
@@ -312,9 +442,9 @@ elif st.session_state.completed:
 
     st.markdown(f"""
     <div style='text-align: center; padding: 25px 20px;'>
-        <h1 class='cinzel-title' style='font-size: 2.5rem;'>{title}</h1>
-        <p class='serif-text' style='font-size: 1.3rem; color: #D4AF37;'>{top_match['similarity_pct']}% Affinity</p>
-        <p style='max-width: 800px; margin: 15px auto;'>{desc}</p>
+        <h1 class='cinzel-title' style='font-size: 2.6rem;'>{title}</h1>
+        <p class='serif-text' style='font-size: 1.3rem; color: #D4AF37;'>{top_match['similarity_pct']}% Match Affinity</p>
+        <p style='max-width: 800px; margin: 15px auto; font-size: 1.05rem; line-height: 1.6;'>{desc}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -343,8 +473,8 @@ elif st.session_state.completed:
         for t in tensions:
             st.markdown(f"""
             <div class='tension-card'>
-                <div style='font-weight:700; color:#D4AF37; margin-bottom:5px;'>{t['title']}</div>
-                <div>{t['description']}</div>
+                <div style='font-weight:700; color:#D4AF37; margin-bottom:6px;'>{t['title']}</div>
+                <div style='line-height:1.6;'>{t['description']}</div>
             </div>
             """, unsafe_allow_html=True)
     else:
