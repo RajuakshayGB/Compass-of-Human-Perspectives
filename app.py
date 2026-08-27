@@ -450,16 +450,23 @@ def inject_theme(theme="Dark", dim_idx=0):
     .wc-pill {{display:inline-flex;align-items:center;border:1px solid var(--wc-border);border-radius:999px;padding:.3rem .65rem;font-size:.73rem;font-weight:700;color:var(--wc-gold);background:var(--wc-gold-soft);}}
     .wc-footer {{text-align:center;color:var(--wc-muted);font-size:.76rem;padding-top:2rem;}}
     .wc-affinity {{position:relative;overflow:hidden;}} .wc-affinity::before {{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(180deg,var(--wc-gold),var(--wc-accent));}} .wc-rank {{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--wc-gold-soft);color:var(--wc-gold);font-weight:800;}} .wc-scorebar {{height:7px;background:var(--wc-line);border-radius:99px;overflow:hidden;margin:.55rem 0 .2rem;}} .wc-scorebar span {{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--wc-accent),var(--wc-gold));}}
-    .wc-theme-chip {{font-size:.65rem;color:var(--wc-muted);text-align:center;text-transform:uppercase;letter-spacing:.08em;margin-top:-.25rem;}}
-    div[data-testid="stButton"]>button,div[data-testid="stDownloadButton"]>button {{border-radius:12px!important;border:1px solid var(--wc-border)!important;min-height:44px!important;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;}} div[data-testid="stButton"]>button:hover,div[data-testid="stDownloadButton"]>button:hover {{transform:translateY(-2px);border-color:var(--wc-gold)!important;box-shadow:0 8px 22px rgba(0,0,0,.12)!important;}}
+    .wc-theme-chip {{font-size:.65rem;color:var(--wc-muted);text-align:center;text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem;}}
     
+    /* Uniform Glowing Tile Header Controls & Buttons */
+    div[data-testid="stButton"]>button,div[data-testid="stDownloadButton"]>button {{border-radius:14px!important;border:1px solid var(--wc-border)!important;min-height:48px!important;background:var(--wc-surface)!important;color:var(--wc-text)!important;box-shadow:var(--wc-shadow)!important;transition:all .2s ease!important;}} 
+    div[data-testid="stButton"]>button:hover,div[data-testid="stDownloadButton"]>button:hover {{transform:translateY(-2px);border-color:var(--wc-gold)!important;box-shadow:0 0 15px var(--wc-gold-soft)!important;}}
+
+    /* Glowing header container styling for uniform header items */
+    .wc-header-tile {{border:1px solid var(--wc-border);border-radius:14px;background:var(--wc-surface);padding:.4rem;text-align:center;box-shadow:var(--wc-shadow);transition:all .2s ease;}}
+    .wc-header-tile:hover {{border-color:var(--wc-gold);box-shadow:0 0 15px var(--wc-gold-soft);}}
+
     /* Golden twin border aesthetic for self-sufficient depth tiles */
     .wc-depth-tile {{border:3px double var(--wc-gold)!important;border-radius:20px!important;padding:1.4rem!important;background:linear-gradient(145deg,var(--wc-surface),var(--wc-gold-soft))!important;box-shadow:var(--wc-shadow)!important;transition:transform .2s ease,border-color .2s ease;}}
     .wc-depth-tile:hover {{transform:translateY(-3px);border-color:var(--wc-accent)!important;}}
 
-    /* Full width options layout */
+    /* Full width options layout & non-overlapping Hindi text fixes */
     div[data-testid="stRadio"] {{width:100%!important;}}
-    div[data-testid="stRadio"] label {{border:1px solid var(--wc-border);border-radius:14px;padding:.85rem 1.1rem;margin:.4rem 0;background:var(--wc-surface);display:flex!important;width:100%!important;transition:border-color .15s ease,background .15s ease;}} 
+    div[data-testid="stRadio"] label {{border:1px solid var(--wc-border);border-radius:14px;padding:.85rem 1.1rem;margin:.4rem 0;background:var(--wc-surface);display:flex!important;width:100%!important;white-space:normal!important;word-break:break-word!important;line-height:1.5!important;transition:border-color .15s ease,background .15s ease;}} 
     div[data-testid="stRadio"] label:hover {{border-color:var(--wc-gold);background:var(--wc-gold-soft);}}
 
     .wc-social-btn {{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:42px;padding:.55rem .7rem;border-radius:10px;text-decoration:none!important;font-weight:700;font-size:.82rem;transition:transform .18s ease,opacity .18s ease;border:1px solid var(--wc-border);}} .wc-social-btn:hover {{transform:translateY(-2px);opacity:.92;}} .wc-x {{background:#000;color:#fff!important;}} .wc-wa {{background:#25D366;color:#fff!important;}} .wc-li {{background:#0A66C2;color:#fff!important;}}
@@ -582,34 +589,39 @@ is_hindi = st.session_state.language == "Hindi"
 
 
 # ---------------------------------------------------------------------------
-# Header — compact controls with smooth language toggle showing alternate text
+# Header — Uniform Glowing Header Tiles with House Logo & Alternate Language Toggle
 # ---------------------------------------------------------------------------
 logo = get_base64_logo()
-c1, c2, c3, c4 = st.columns([5.8, 1.15, 1.45, 1.15])
+c1, c2, c3, c4 = st.columns([5.2, 1.6, 1.6, 1.6])
 with c1:
     if logo:
         st.markdown(f'<div class="wc-brand"><img src="data:image/png;base64,{logo}"><span>WORLDVIEW COMPASS</span></div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="wc-brand"><span style="font-size:1.65rem">🧭</span><span>{"विचार कम्पास" if is_hindi else "WORLDVIEW COMPASS"}</span></div>', unsafe_allow_html=True)
+
 with c2:
+    st.markdown('<div class="wc-header-tile">', unsafe_allow_html=True)
     toggle_label = "English" if is_hindi else "हिन्दी"
-    is_hindi_toggle = st.toggle(toggle_label, value=is_hindi, key="lang_toggle_switch", help="Switch language / भाषा बदलें")
-    desired_lang = "Hindi" if is_hindi_toggle else "English"
-    if desired_lang != st.session_state.language:
-        st.session_state.language = desired_lang
+    if st.button(toggle_label, key="lang_toggle_btn", use_container_width=True, help="Switch language / भाषा बदलें"):
+        st.session_state.language = "English" if is_hindi else "Hindi"
         sync_state_to_url()
         st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
 with c3:
+    st.markdown('<div class="wc-header-tile">', unsafe_allow_html=True)
     theme_order = ["Dark", "Light", "Ivory", "Ocean"]
-    theme_icons = {"Dark":"🌙", "Light":"☀️", "Ivory":"◐", "Ocean":"🌊"}
+    theme_icons = {"Dark":"🌙 Dark", "Light":"☀️ Light", "Ivory":"◐ Ivory", "Ocean":"🌊 Ocean"}
     current_theme = st.session_state.theme if st.session_state.theme in theme_order else "Dark"
     if st.button(theme_icons[current_theme], key="theme_cycle_btn", use_container_width=True, help=f"Theme: {current_theme} — click to change"):
         st.session_state.theme = theme_order[(theme_order.index(current_theme)+1)%len(theme_order)]
         sync_state_to_url()
         st.rerun()
-    st.markdown(f'<div class="wc-theme-chip">{escape(current_theme)}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
 with c4:
-    if st.button("🧭", key="home_icon_btn", use_container_width=True, help="Return to Home"):
+    st.markdown('<div class="wc-header-tile">', unsafe_allow_html=True)
+    if st.button("🏠 Home", key="home_icon_btn", use_container_width=True, help="Return to Home"):
         st.session_state.completed = False
         st.session_state.started = False
         st.session_state.answers = {}
@@ -618,6 +630,7 @@ with c4:
         st.session_state.friend_url = ""
         sync_state_to_url()
         st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="wc-section" style="padding-top:.35rem;margin-top:.25rem"></div>', unsafe_allow_html=True)
 st.write("---")
@@ -1019,7 +1032,6 @@ elif st.session_state.completed:
                 with f2:
                     st.plotly_chart(
                         radar_figure([("Friend" if not is_hindi else "मित्र", friend_coords)], "Friend" if not is_hindi else "मित्र"),
-                        use_keyword=True,
                         use_container_width=True,
                         key="friend_radar",
                         config={"displaylogo": False, "responsive": True},
@@ -1078,7 +1090,7 @@ elif st.session_state.completed:
 
         sh1, sh2, sh3, sh4 = st.columns(4)
         with sh1:
-            st.markdown(f"<a class='wc-social-btn wc-x' style='width:100%' href='{escape(x_url)}' target='_blank' rel='noopener noreferrer'>𝕏&nbsp; X</a>", unsafe_allow_html=True)
+            st.markdown(f"<a class='wc-social-btn wc-x' style='width:100% ' href='{escape(x_url)}' target='_blank' rel='noopener noreferrer'>𝕏&nbsp; X</a>", unsafe_allow_html=True)
         with sh2:
             st.markdown(f"<a class='wc-social-btn wc-wa' style='width:100%' href='{escape(wa_url)}' target='_blank' rel='noopener noreferrer'>◉&nbsp; WhatsApp</a>", unsafe_allow_html=True)
         with sh3:
